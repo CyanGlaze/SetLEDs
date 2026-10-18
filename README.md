@@ -25,7 +25,7 @@ curl -fsSL https://raw.githubusercontent.com/CyanGlaze/SetLEDs/main/setleds.sh |
 curl -fsSL https://gitee.com/LoveGlaze/SetLEDs/raw/main/setleds.sh | bash
 ```
 
-> 不带参数运行 `bash setleds.sh` 时会**自动选择**：先试 GitHub，连不上就回退到 Gitee。
+> 脚本优先使用与它**同目录的 `./setleds`**：克隆仓库后运行 `bash setleds.sh` 即直接用仓库自带的二进制（GitHub 克隆用 GitHub 的、Gitee 克隆用 Gitee 的，自动对应）。若通过 `curl | bash` 管道运行且本地没有二进制，则从 `setleds.sh` 顶部的 `BASE_URL`（默认 Gitee 国内加速）下载。
 
 脚本会自动完成：下载二进制 → 安装 LaunchAgent → 打开"输入监控"授权面板。  
 下载完成后**仍需你手动授权一次**（见下方"首次必做"）。
