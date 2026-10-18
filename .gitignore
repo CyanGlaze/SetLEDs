@@ -1,0 +1,24 @@
+# SetLEDs .gitignore — whitelist style:
+# ignore everything, keep only the project files below.
+
+# Ignore everything by default
+*
+
+# Keep project source, scripts, docs and metadata
+!.gitignore
+!.gitattributes
+!main.c
+!main.h
+!Info.plist
+!Makefile
+!install.sh
+!uninstall.sh
+!setleds.sh
+!README.md
+
+# Keep the prebuilt binary (setleds.sh downloads it from the repo via raw URL)
+!setleds
+
+# Ignore assistant / project memory and OS cruft
+.workbuddy/
+.DS_Store
