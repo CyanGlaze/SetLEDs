@@ -1,4 +1,4 @@
-# setleds — 用 NumLock 键切换小键盘
+# SetLEDs — 用 NumLock 键切换小键盘
 
 在黑苹果（macOS 26）上，物理键盘的 NumLock 键默认无法切换小键盘。本工具在 HID 层监听 NumLock 按键，翻转键盘 LED，从而让 NumLock 直接控制小键盘的开关。
 
@@ -6,32 +6,50 @@
 - 编译产物：`setleds`
 - 安装方式：用户级 LaunchAgent（开机自启）+ 一次性"输入监控"授权
 
+> 说明：本项目的说明文档与配套安装脚本均由 AI 辅助生成。
+
 ---
 
 ## 方式一：一键远程安装（推荐）
 
-适合把项目放到 GitHub 后，给别的 Mac 直接装。
-
-> 前提：你已把编译好的 `setleds` 二进制上传到云端（如 GitHub Release），并把 `setleds.sh` 顶部的 `BINARY_URL` 改成你的真实地址。
-
-终端里执行下面任意一条：
+### GitHub（需科学上网）
 
 ```bash
-# 先下载脚本再运行
-bash setleds.sh
-
-# 或者直接管道执行（脚本会自动从云端拉取二进制）
-curl -fsSL https://raw.githubusercontent.com/YOUR_USERNAME/setleds/main/setleds.sh | bash
+curl -fsSL https://raw.githubusercontent.com/CyanGlaze/SetLEDs/main/setleds.sh | bash
 ```
 
-脚本会自动完成：下载二进制 → 安装 LaunchAgent → 打开"输入监控"授权面板。
+### Gitee（国内加速）
+
+```bash
+curl -fsSL https://gitee.com/LoveGlaze/SetLEDs/raw/main/setleds.sh | bash
+```
+
+> 不带参数运行 `bash setleds.sh` 时会**自动选择**：先试 GitHub，连不上就回退到 Gitee。
+
+脚本会自动完成：下载二进制 → 安装 LaunchAgent → 打开"输入监控"授权面板。  
 下载完成后**仍需你手动授权一次**（见下方"首次必做"）。
 
 ---
 
 ## 方式二：手动安装（本地编译）
 
-适合你自己在本机开发、或想从源码构建。
+适合在本机开发、或想从源码构建。两个仓库内容一致，任选其一克隆：
+
+### GitHub（需科学上网）
+
+```bash
+git clone https://github.com/CyanGlaze/SetLEDs.git
+cd SetLEDs
+```
+
+### Gitee（国内加速）
+
+```bash
+git clone https://gitee.com/LoveGlaze/SetLEDs.git
+cd SetLEDs
+```
+
+然后编译并安装：
 
 ```bash
 make              # 在当前目录编译出 ./setleds
@@ -47,7 +65,7 @@ make              # 在当前目录编译出 ./setleds
 因为工具要监听键盘按键，macOS 强制要求授权（所有键盘类工具都一样，无法绕过）：
 
 1. 打开 **系统设置 → 隐私与安全性 → 输入监控**
-2. 点击 **+** ，在文件对话框按 **Cmd-Shift-.** 显示隐藏文件夹，添加 `setleds`
+2. 点击 **+** ，在文件对话框按 **Cmd-Shift-.** 显示隐藏文件夹，添加 `setleds`  
    （用脚本安装时，Finder 已自动帮你定位并高亮了该文件，直接拖进去也行）
 3. 确保它旁边的**开关是打开的**
 
@@ -82,3 +100,18 @@ make              # 在当前目录编译出 ./setleds
 - **二进制跨机器签名**：`make` 产出的是 ad-hoc 签名，只在本机有效。发给别人前建议用 Developer ID 证书重签（`codesign --sign "Developer ID Application: 你的名" setleds`），否则对方首次运行可能被 Gatekeeper 拦截。一键安装脚本已自动清除隔离属性以降低阻力。
 - **不要重复监听**：LaunchAgent 已在后台运行，请勿再手动 `sudo setleds -d`，两个进程同时监听会互相抵消，看起来像"没反应"。
 - **重新编译安装后**：若换了二进制，可能需要在"输入监控"里把开关重新勾选一次。
+
+---
+
+## 鸣谢 / Credits
+
+本工具基于 [damieng/setledsmac](https://github.com/damieng/setledsmac) 修改而来，原作者为 **Damien Guard**。本仓库在其基础上增加了 macOS 26 下的 NumLock 物理键监听守护模式与用户级 LaunchAgent 安装方案。
+
+---
+
+## 交流与支持
+
+- **QQ 交流群：724052199**（在 QQ 中搜索群号即可申请加入）
+- 群链接：https://qm.qq.com/q/724052199
+
+使用中遇到的问题、建议或想交流黑苹果键盘折腾经验，欢迎加群。

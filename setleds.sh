@@ -5,21 +5,41 @@
 # per-user LaunchAgent that toggles the numeric keypad with the NumLock key.
 # No local compilation is performed.
 #
-# Usage (after publishing to GitHub):
-#     bash setleds.sh
-#   or pipe it directly:
-#     curl -fsSL https://raw.githubusercontent.com/YOUR_USERNAME/setleds/main/setleds.sh | bash
+# Mirror / source:
+#   GitHub : https://github.com/CyanGlaze/SetLEDs   (may need a VPN / 科学上网)
+#   Gitee  : https://gitee.com/LoveGlaze/SetLEDs    (domestic mirror / 国内加速)
+#
+# Usage:
+#   bash setleds.sh            # auto: try GitHub, fall back to Gitee
+#   bash setleds.sh github     # force GitHub  (needs 科学上网)
+#   bash setleds.sh gitee      # force Gitee   (国内加速)
+#   MIRROR=gitee bash setleds.sh
+#   or pipe directly:
+#     curl -fsSL https://raw.githubusercontent.com/CyanGlaze/SetLEDs/main/setleds.sh | bash
+#     curl -fsSL https://gitee.com/LoveGlaze/SetLEDs/raw/main/setleds.sh | bash
 #
 # The only manual step for the end user is granting "Input Monitoring" in
 # System Settings (a hard macOS requirement for any key listener, same for all).
 set -e
 
-# >>> EDIT THIS before publishing: URL of your prebuilt setleds binary <<<
-# E.g. a GitHub release asset:
-#   https://github.com/YOUR_USERNAME/setleds/releases/download/v1.0/setleds
-# or a raw file in the repo:
-#   https://raw.githubusercontent.com/YOUR_USERNAME/setleds/main/setleds
-BINARY_URL="https://github.com/YOUR_USERNAME/setleds/releases/download/v1.0/setleds"
+# ===== Pick the mirror that hosts the prebuilt "setleds" binary (same repo) =====
+GITHUB_RAW="https://raw.githubusercontent.com/CyanGlaze/SetLEDs/main"
+GITEE_RAW="https://gitee.com/LoveGlaze/SetLEDs/raw/main"
+
+MIRROR_CHOICE="${1:-${MIRROR:-auto}}"
+case "$MIRROR_CHOICE" in
+  github)
+    BASE_URL="$GITHUB_RAW"; MIRROR_NAME="GitHub" ;;
+  gitee)
+    BASE_URL="$GITEE_RAW"; MIRROR_NAME="Gitee" ;;
+  auto|*)
+    if curl -fsS --max-time 8 "${GITHUB_RAW}/setleds" -o /dev/null 2>/dev/null; then
+      BASE_URL="$GITHUB_RAW"; MIRROR_NAME="GitHub"
+    else
+      BASE_URL="$GITEE_RAW"; MIRROR_NAME="Gitee"
+    fi ;;
+esac
+BINARY_URL="${BASE_URL}/setleds"
 
 # Must run as a normal user, not root (LaunchAgent is per-user).
 if [ "$(id -u)" -eq 0 ]; then
@@ -42,7 +62,7 @@ WORK="$(mktemp -d)"
 cleanup() { rm -rf "$WORK"; }
 trap cleanup EXIT
 
-echo "==> Downloading prebuilt setleds from: $BINARY_URL"
+echo "==> Downloading prebuilt setleds from ${MIRROR_NAME}: $BINARY_URL"
 curl -fsSL "$BINARY_URL" -o "$WORK/setleds"
 chmod +x "$WORK/setleds"
 
